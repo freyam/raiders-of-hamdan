@@ -9,10 +9,10 @@ X                                             X
 X                 C         C                 X
 X                  WWWWWWWWW                  X
 X                  W       W                  X
-X                  W  H    W                  X
-X                  W       W                  X
-X                  W       W                  X
-X                  W       W                  X
+X                  W  HHH  W                  X
+X                  W  HHH  W                  X
+X                  W  HHH  W                  X
+X                  W  HHH  W                  X
 X R                W       W                  X
 X R                WWWWWWWWW                  X
 X                 C         C                 X

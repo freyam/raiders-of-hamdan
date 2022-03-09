@@ -56,7 +56,7 @@ structure_types = {
     },
     "X": {
         "name": "border",
-        "visual": "Ξ",
+        "visual": "■",
         "hp": 100,
         "hostile": False,
         "range": None,
@@ -79,6 +79,10 @@ structure_types = {
 }
 
 
+def is_structure(char):
+    return char in structure_types
+
+
 class Structure:
     def __init__(self, game, x, y, structure_code):
         self.game = game
@@ -99,5 +103,5 @@ class Structure:
     def draw(self):
         for y in range(self.y, self.y + self.height):
             for x in range(self.x, self.x + self.width):
-                self.game.map[y][x] = self.visual
-        return self.game.map
+                self.game.kingdom[y][x] = self.visual
+        return self

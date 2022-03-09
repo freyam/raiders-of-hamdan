@@ -1,7 +1,7 @@
 import time
 from colorama import Fore, Back, Style
 
-from src.structure import Structure, structure_types
+from src.structure import Structure, structure_types, is_structure
 
 
 class Game:
@@ -10,18 +10,17 @@ class Game:
         self.kingdom = kingdom
         self.stats = stats
 
+    def update_map(self):
+        pass
+
     def render(self):
+        self.update_map()
         for row in self.kingdom:
             for char in row:
                 if char == " ":
                     print(" ", end="")
-                else:
-                    structure_code = char
-                    x = self.kingdom.index(row)
-                    y = row.index(char)
-                    tile = Structure(self, x, y, structure_code)
-                    tile.draw()
-                    print(tile.visual, end="")
+                elif is_structure(char):
+                    print(structure_types[char]["visual"], end="")
             print()
 
 
