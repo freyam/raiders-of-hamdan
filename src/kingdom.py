@@ -12,14 +12,18 @@ class Kingdom:
                 row.append(".")
             self.kingdom.append(row)
 
-    def render(self):
+    def render(self, game):
         for row in self.kingdom:
             for char in row:
                 if char == ".":
                     print(char, end="")
                 elif is_structure(char):
+                    x = row.index(char)
+                    y = self.kingdom.index(row)
+                    type = structure_types[game.kingdom.kingdom[y][x]]["code"]
                     print_hex(
-                        structure_types[char]["visual"], structure_types[char]["color"]
+                        structure_types[char]["visual"],
+                        structure_types[char]["color"],
                     )
                 elif is_troop(char):
                     print_hex(troop_types[char]["visual"], troop_types[char]["color"])

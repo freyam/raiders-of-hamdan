@@ -1,4 +1,4 @@
-spell_types = {"rage": {"active": False}, "heal": {"active": False}}
+spell_types = {"rage": {"active": False, "visual": "¤"}, "heal": {"active": False}}
 
 
 class Spell:
