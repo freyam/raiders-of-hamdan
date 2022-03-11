@@ -1,34 +1,26 @@
 import time
 from colorama import Fore, Back, Style
 
-from src.structure import Structure, structure_types, is_structure
+from src.structure import *
 
 
 class Game:
-    def __init__(self, kingdom, stats):
+    def __init__(self, kingdom):
         self.run = True
         self.kingdom = kingdom
-        self.stats = stats
-
-    def update_map(self):
-        pass
-
-    def render(self):
-        self.update_map()
-        for row in self.kingdom:
-            for char in row:
-                if char == " ":
-                    print(" ", end="")
-                elif is_structure(char):
-                    print(structure_types[char]["visual"], end="")
-            print()
-
-
-class Stats:
-    def __init__(self):
-        self.difficulty = 2
         self.time = time.time()
+        self.walls = []
+        self.residences = []
+        self.canons = []
 
     def render(self):
-        print("Difficulty:", self.difficulty)
-        print("Time:", (time.time() - self.time).__round__(2))
+        print("\033c", end="")
+
+        print("Kingdom of Hamdan")
+
+        self.kingdom.render()
+
+        print("Time: " + str((time.time() - self.time).__round__(2)) + "s")
+        print("Residences Left: " + str(len(self.residences)))
+        print("Walls Left: " + str(len(self.walls)))
+        print("Canons Left: " + str(len(self.canons)))

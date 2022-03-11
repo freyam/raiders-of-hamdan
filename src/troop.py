@@ -1,25 +1,19 @@
 troop_types = {
     "K": {
+        "code": "K",
         "name": "king",
-        "visual": "Π",
-        "hp": 500,
-        "hostile": True,
-        "range": None,
+        "visual": "¶",
+        "hp": 1000,
         "damage": None,
-        "color": "#F05365",  # red
-        "width": 3,
-        "height": 4,
+        "color": "#9898f9",  # purple
     },
     "B": {
+        "code": "B",
         "name": "barbarian",
-        "visual": "Ψ",
-        "hp": 100,
-        "hostile": True,
-        "range": None,
+        "visual": "⚫",
+        "hp": 200,
         "damage": None,
-        "color": "#96ADC8",  # grey
-        "width": 1,
-        "height": 1,
+        "color": "#f8bc80",  # light orange
     },
 }
 
@@ -35,18 +29,62 @@ class Troop:
         self.y = y
 
         self.troop = troop_types[troop_code]
-        self.name = self.structure["name"]
-        self.visual = self.structure["visual"]
-        self.hp = self.structure["hp"]
-        self.hostile = self.structure["hostile"]
-        self.range = self.structure["range"]
-        self.damage = self.structure["damage"]
-        self.color = self.structure["color"]
-        self.width = self.structure["width"]
-        self.height = self.structure["height"]
+        self.code = self.troop["code"]
+        self.name = self.troop["name"]
+        self.visual = self.troop["visual"]
+        self.hp = self.troop["hp"]
+        self.damage = self.troop["damage"]
+        self.color = self.troop["color"]
 
-    def draw(self):
-        for y in range(self.y, self.y + self.height):
-            for x in range(self.x, self.x + self.width):
-                self.game.kingdom[y][x] = self.visual
-        return self
+    def display(self):
+        self.game.kingdom.kingdom[self.y][self.x] = self.code
+
+
+class King(Troop):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "K")
+
+    def display(self):
+        return super().display()
+
+    def move(self, game, key):
+        if (
+            key == "w"
+            and self.y > 0
+            and game.kingdom.kingdom[self.y - 1][self.x] == "."
+        ):
+            game.kingdom.kingdom[self.y - 1][self.x] = self.code
+            game.kingdom.kingdom[self.y][self.x] = "."
+            self.y -= 1
+        elif (
+            key == "a"
+            and self.x > 0
+            and game.kingdom.kingdom[self.y][self.x - 1] == "."
+        ):
+            game.kingdom.kingdom[self.y][self.x - 1] = self.code
+            game.kingdom.kingdom[self.y][self.x] = "."
+            self.x -= 1
+        elif (
+            key == "s"
+            and self.y < len(game.kingdom.kingdom) - 1
+            and game.kingdom.kingdom[self.y + 1][self.x] == "."
+        ):
+            game.kingdom.kingdom[self.y + 1][self.x] = self.code
+            game.kingdom.kingdom[self.y][self.x] = "."
+            self.y += 1
+        elif (
+            key == "d"
+            and self.x < len(game.kingdom.kingdom[0]) - 1
+            and game.kingdom.kingdom[self.y][self.x + 1] == "."
+        ):
+            game.kingdom.kingdom[self.y][self.x + 1] = self.code
+            game.kingdom.kingdom[self.y][self.x] = "."
+            self.x += 1
+
+
+class Barbarian(Troop):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "B")
+
+    def display(self):
+        return super().display()

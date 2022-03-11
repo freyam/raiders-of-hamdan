@@ -1,5 +1,8 @@
+from colorama import Fore, Back, Style
+
 structure_types = {
     "H": {
+        "code": "H",
         "name": "castle",
         "visual": "Π",
         "hp": 500,
@@ -11,68 +14,38 @@ structure_types = {
         "height": 4,
     },
     "R": {
+        "code": "R",
         "name": "residence",
         "visual": "Δ",
         "hp": 100,
         "hostile": True,
         "range": None,
         "damage": None,
-        "color": "#98DFAF",  # green
+        "color": "#65f053",  # green
         "width": 1,
         "height": 1,
     },
     "W": {
+        "code": "W",
         "name": "wall",
-        "visual": "φ",
+        "visual": "▓",
         "hp": 100,
         "hostile": True,
         "range": None,
         "damage": None,
-        "color": "#414288",  # blue
+        "color": "#5365f0",  # blue
         "width": 1,
         "height": 1,
     },
     "C": {
+        "code": "C",
         "name": "cannon",
         "visual": "Ψ",
         "hp": 100,
         "hostile": True,
-        "range": None,
-        "damage": None,
+        "range": 5,
+        "damage": 10,
         "color": "#96ADC8",  # grey
-        "width": 1,
-        "height": 1,
-    },
-    "T": {
-        "name": "tunnel",
-        "visual": "Θ",
-        "hp": 100,
-        "hostile": False,
-        "range": None,
-        "damage": None,
-        "color": "#F0F0F0",  # white
-        "width": 1,
-        "height": 1,
-    },
-    "X": {
-        "name": "border",
-        "visual": "■",
-        "hp": 100,
-        "hostile": False,
-        "range": None,
-        "damage": None,
-        "color": "#202A25",  # dark green
-        "width": 1,
-        "height": 1,
-    },
-    " ": {
-        "name": "empty",
-        "visual": " ",
-        "hp": 0,
-        "hostile": False,
-        "range": None,
-        "damage": None,
-        "color": "#000000",  # black
         "width": 1,
         "height": 1,
     },
@@ -90,6 +63,7 @@ class Structure:
         self.y = y
 
         self.structure = structure_types[structure_code]
+        self.code = self.structure["code"]
         self.name = self.structure["name"]
         self.visual = self.structure["visual"]
         self.hp = self.structure["hp"]
@@ -100,8 +74,39 @@ class Structure:
         self.width = self.structure["width"]
         self.height = self.structure["height"]
 
-    def draw(self):
-        for y in range(self.y, self.y + self.height):
-            for x in range(self.x, self.x + self.width):
-                self.game.kingdom[y][x] = self.visual
-        return self
+    def display(self):
+        for yy in range(self.y, self.y + self.height):
+            for xx in range(self.x, self.x + self.width):
+                self.game.kingdom.kingdom[yy][xx] = self.code
+
+
+class Castle(Structure):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "H")
+
+    def display(self):
+        return super().display()
+
+
+class Residence(Structure):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "R")
+
+    def display(self):
+        return super().display()
+
+
+class Wall(Structure):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "W")
+
+    def display(self):
+        return super().display()
+
+
+class Cannon(Structure):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "C")
+
+    def display(self):
+        return super().display()
