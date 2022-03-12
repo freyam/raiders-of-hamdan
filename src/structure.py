@@ -3,14 +3,14 @@ structure_types = {
         "code": "H",
         "name": "castle",
         "visual": "Π",
-        "hp": 500,
-        "max_hp": 500,
+        "hp": 2000,
+        "max_hp": 2000,
         "hostile": True,
         "range": None,
         "damage": None,
-        "color": "#fbe08f",  # saffron
-        "color_light": "#fbdb7c",  # light saffron
-        "color_lighter": "#fdf0c8",  # lighter saffron
+        "color": "#ED6124",  # saffron
+        "color_light": "#F6A27B",  # saffron
+        "color_lighter": "#FEE3D1",  # light saffron
         "width": 3,
         "height": 4,
     },
@@ -23,9 +23,9 @@ structure_types = {
         "hostile": True,
         "range": None,
         "damage": None,
-        "color": "#65f053",  # green
-        "color_light": "#c6f9bf",  # light green
-        "color_lighter": "#e6fde3",  # lighter green
+        "color": "#5CB270",  # green
+        "color_light": "#A8D26D",  # light green
+        "color_lighter": "#F4F269",  # lighter green
         "width": 1,
         "height": 1,
     },
@@ -35,12 +35,12 @@ structure_types = {
         "visual": "▓",
         "hp": 200,
         "max_hp": 200,
-        "hostile": True,
+        "hostile": False,
         "range": None,
         "damage": None,
-        "color": "#96ADC8",  # grey
-        "color_light": "#96ADC8",  # light grey
-        "color_lighter": "#96ADC8",  # lighter grey
+        "color": "#5B5A59",  # grey
+        "color_light": "#9F9F9E",  # light grey
+        "color_lighter": "#E3E3E3",  # lighter grey
         "width": 1,
         "height": 1,
     },
@@ -52,10 +52,25 @@ structure_types = {
         "max_hp": 200,
         "hostile": True,
         "range": 5,
-        "damage": 10,
-        "color": "#5365f0",  # blue
-        "color_light": "#b3c6f9",  # light blue
-        "color_lighter": "#d3e6fd",  # lighter blue
+        "damage": 5,
+        "color": "#0D41E1",  # blue
+        "color_light": "#0A85ED",  # light blue
+        "color_lighter": "#07C8F9",  # lighter blue
+        "width": 1,
+        "height": 1,
+    },
+    "T": {
+        "code": "T",
+        "name": "tunnel",
+        "visual": "□",
+        "hp": None,
+        "max_hp": None,
+        "hostile": False,
+        "range": None,
+        "damage": None,
+        "color": "#FF51EB",  # pink
+        "color_light": "#FF51EB",  # pink
+        "color_lighter": "#FF51EB",  # pink
         "width": 1,
         "height": 1,
     },
@@ -93,9 +108,9 @@ class Structure:
                 self.game.kingdom.kingdom[yy][xx] = self.code
 
     def get_color(self):
-        if self.hp < self.hp / 5:
+        if self.hp < self.max_hp / 5:
             return self.color_lighter
-        elif self.hp < self.hp / 2:
+        elif self.hp < self.max_hp / 2:
             return self.color_light
         else:
             return self.color
@@ -128,6 +143,14 @@ class Wall(Structure):
 class Cannon(Structure):
     def __init__(self, game, x, y):
         super().__init__(game, x, y, "C")
+
+    def display(self):
+        return super().display()
+
+
+class Tunnel(Structure):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "T")
 
     def display(self):
         return super().display()

@@ -1,3 +1,4 @@
+import math
 from src.structure import *
 
 troop_types = {
@@ -7,7 +8,8 @@ troop_types = {
         "visual": "¶",
         "hp": 1000,
         "max_hp": 1000,
-        "damage": 100,
+        "damage": 50,
+        "speed": 1,
         "weapon": "sword",
         "color": "#E54F6D",  # red
         "color_light": "#F9B7C7",  # light red
@@ -16,10 +18,11 @@ troop_types = {
     "B": {
         "code": "B",
         "name": "barbarian",
-        "visual": "⚫",
+        "visual": "¤",
         "hp": 200,
         "max_hp": 200,
-        "damage": 100,
+        "damage": 10,
+        "speed": 1,
         "weapon": "sword",
         "color": "#f8bc80",  # light orange
         "color_light": "#f9d3b7",  # lighter orange
@@ -55,20 +58,12 @@ class Troop:
         self.game.kingdom.kingdom[self.y][self.x] = self.code
 
     def get_color(self):
-        if self.hp < self.structure["hp"] / 5:
+        if self.hp < self.structure["max_hp"] / 5:
             return self.color_lighter
-        elif self.hp < self.structure["hp"] / 2:
+        elif self.hp < self.structure["max_hp"] / 2:
             return self.color_light
         else:
             return self.color
-
-
-class King(Troop):
-    def __init__(self, game, x, y):
-        super().__init__(game, x, y, "K")
-
-    def display(self):
-        return super().display()
 
     def move(self, game, key):
         if (
@@ -139,8 +134,13 @@ class King(Troop):
             if type == "H":
                 game.castle.hp -= self.damage
 
+                if game.castle.hp < game.castle.max_hp / 3:
+                    game.castle.color = game.castle.color_lighter
+                elif game.castle.hp <= game.castle.max_hp / 2:
+                    game.castle.color = game.castle.color_light
+
                 if game.castle.hp <= 0:
-                    game.castle = ""
+                    game.castle = None
                     for y in range(len(game.kingdom.kingdom)):
                         for x in range(len(game.kingdom.kingdom[0])):
                             if game.kingdom.kingdom[y][x] == "H":
@@ -150,6 +150,11 @@ class King(Troop):
                     if wall.x == attack_x and wall.y == attack_y:
                         game.walls[i].hp -= self.damage
 
+                        if game.walls[i].hp < game.walls[i].max_hp / 3:
+                            game.walls[i].color = game.walls[i].color_lighter
+                        elif game.walls[i].hp <= game.walls[i].max_hp / 2:
+                            game.walls[i].color = game.walls[i].color_light
+
                         if game.walls[i].hp <= 0:
                             game.walls.pop(i)
                             game.kingdom.kingdom[attack_y][attack_x] = "."
@@ -158,10 +163,6 @@ class King(Troop):
                 for i, cannon in enumerate(game.cannons):
                     if cannon.x == attack_x and cannon.y == attack_y:
                         game.cannons[i].hp -= self.damage
-                        # print(
-                        #     str(game.cannons[i].hp) + " " + str(game.cannons[i].color)
-                        # )
-                        # x = input()
 
                         if game.cannons[i].hp < game.cannons[i].max_hp / 3:
                             game.cannons[i].color = game.cannons[i].color_lighter
@@ -178,11 +179,30 @@ class King(Troop):
                     if residence.x == attack_x and residence.y == attack_y:
                         game.residences[i].hp -= self.damage
 
+                        if game.residences[i].hp < game.residences[i].max_hp / 3:
+                            game.residences[i].color = game.residences[i].color_lighter
+                        elif game.residences[i].hp <= game.residences[i].max_hp / 2:
+                            game.residences[i].color = game.residences[i].color_light
+
                         if game.residences[i].hp <= 0:
                             game.residences.pop(i)
                             game.kingdom.kingdom[attack_y][attack_x] = "."
                             game.residencesLooted += 1
                         break
+
+
+class King(Troop):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "K")
+
+    def display(self):
+        return super().display()
+
+    def move(self, game, key):
+        return super().move(game, key)
+
+    def attack(self, game, weapon):
+        return super().attack(game, weapon)
 
 
 class Barbarian(Troop):
@@ -191,3 +211,54 @@ class Barbarian(Troop):
 
     def display(self):
         return super().display()
+
+    def move(self, game, key):
+        super().move(game, key)
+
+    def attack(self, game, weapon):
+        super().attack(game, weapon)
+
+    def nearestHostileStructure(self, game):
+        nearest_structure = None
+        nearest_distance = None
+
+        structures = [game.castle] + game.walls + game.cannons + game.residences
+
+        for structure in structures:
+            if structure and structure.hostile:
+                distance = abs(self.x - structure.x) + abs(self.y - structure.y)
+                if nearest_distance is None or distance < nearest_distance:
+                    nearest_structure = structure
+                    nearest_distance = distance
+
+        return nearest_structure
+
+    def moveToNearestHostileStructure(self, game):
+        nearest_structure = self.nearestHostileStructure(game)
+
+        if nearest_structure is None:
+            return
+
+        if nearest_structure.x > self.x:
+            self.move(game, "d")
+        elif nearest_structure.x < self.x:
+            self.move(game, "a")
+        elif nearest_structure.y > self.y:
+            self.move(game, "s")
+        elif nearest_structure.y < self.y:
+            self.move(game, "w")
+
+        if (
+            abs(self.x - nearest_structure.x) <= 1
+            and abs(self.y - nearest_structure.y) <= 1
+        ) or (
+            self.y + 1 >= len(game.kingdom.kingdom)
+            or self.y - 1 < 0
+            or self.x + 1 >= len(game.kingdom.kingdom[0])
+            or self.x - 1 < 0
+            or game.kingdom.kingdom[self.y + 1][self.x] in ["W", "H"]
+            or game.kingdom.kingdom[self.y - 1][self.x] in ["W", "H"]
+            or game.kingdom.kingdom[self.y][self.x + 1] in ["W", "H"]
+            or game.kingdom.kingdom[self.y][self.x - 1] in ["W", "H"]
+        ):
+            self.attack(game, "sword")
