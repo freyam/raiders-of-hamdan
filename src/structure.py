@@ -7,6 +7,7 @@ structure_types = {
         "max_hp": 2000,
         "hostile": True,
         "range": None,
+        "space-range": None,
         "damage": None,
         "color": "#ED6124",  # saffron
         "color_light": "#F6A27B",  # saffron
@@ -22,6 +23,7 @@ structure_types = {
         "max_hp": 200,
         "hostile": True,
         "range": None,
+        "space-range": None,
         "damage": None,
         "color": "#6DE54F",  # green
         "color_light": "#A8D26D",  # light green
@@ -37,6 +39,7 @@ structure_types = {
         "max_hp": 200,
         "hostile": False,
         "range": None,
+        "space-range": None,
         "damage": None,
         "color": "#5B5A59",  # grey
         "color_light": "#9F9F9E",  # light grey
@@ -52,10 +55,27 @@ structure_types = {
         "max_hp": 200,
         "hostile": True,
         "range": 5,
+        "space-range": 0,
         "damage": 5,
         "color": "#0D41E1",  # blue
         "color_light": "#0A85ED",  # light blue
         "color_lighter": "#07C8F9",  # lighter blue
+        "width": 1,
+        "height": 1,
+    },
+    "S": {
+        "code": "S",
+        "name": "space-cannon",
+        "visual": "Ψ",
+        "hp": 200,
+        "max_hp": 200,
+        "hostile": True,
+        "range": 5,
+        "space-range": 5,
+        "damage": 5,
+        "color": "#5BF6D0",  # green
+        "color_light": "#B7FBEA",  # light green
+        "color_lighter": "#EFFEFA",  # lighter green
         "width": 1,
         "height": 1,
     },
@@ -67,6 +87,7 @@ structure_types = {
         "max_hp": None,
         "hostile": False,
         "range": None,
+        "space-range": None,
         "damage": None,
         "color": "#FF51EB",  # pink
         "color_light": "#FF51EB",  # pink
@@ -95,6 +116,8 @@ class Structure:
         self.max_hp = self.structure["max_hp"]
         self.hostile = self.structure["hostile"]
         self.range = self.structure["range"]
+        self.space_range = self.structure["space-range"]
+
         self.damage = self.structure["damage"]
         self.color = self.structure["color"]
         self.color_light = self.structure["color_light"]
@@ -143,6 +166,14 @@ class Wall(Structure):
 class Cannon(Structure):
     def __init__(self, game, x, y):
         super().__init__(game, x, y, "C")
+
+    def display(self):
+        return super().display()
+
+
+class SpaceCannon(Structure):
+    def __init__(self, game, x, y):
+        super().__init__(game, x, y, "S")
 
     def display(self):
         return super().display()

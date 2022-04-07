@@ -34,19 +34,19 @@ def init():
         game.walls.append(Wall(game, game.castle.x - 2, y))
         game.walls.append(Wall(game, game.castle.x + game.castle.width + 1, y))
 
-    game.cannons.append(Cannon(game, game.castle.x - 3, game.castle.y - 3))
-    game.cannons.append(
-        Cannon(game, game.castle.x + game.castle.width + 2, game.castle.y - 3)
+    game.space_cannons.append(SpaceCannon(game, game.castle.x - 3, game.castle.y - 3))
+    game.space_cannons.append(
+        SpaceCannon(game, game.castle.x + game.castle.width + 2, game.castle.y - 3)
     )
-    game.cannons.append(
-        Cannon(
+    game.space_cannons.append(
+        SpaceCannon(
             game,
             game.castle.x + game.castle.width + 2,
             game.castle.y + game.castle.height + 2,
         )
     )
-    game.cannons.append(
-        Cannon(game, game.castle.x - 3, game.castle.y + game.castle.height + 2)
+    game.space_cannons.append(
+        SpaceCannon(game, game.castle.x - 3, game.castle.y + game.castle.height + 2)
     )
 
     # for x in range(KINGDOM_WIDTH):
@@ -86,6 +86,9 @@ def init():
     for cannon in game.cannons:
         cannon.display()
 
+    for space_cannon in game.space_cannons:
+        space_cannon.display()
+
     player_choice = input("(k)ing or (q)ueen? ")
     game.player = King(game, 1, 1) if player_choice == "k" else Queen(game, 1, 1)
 
@@ -111,7 +114,12 @@ def animate():
             exit(0)
             break
 
-        if game.castle == None and len(game.residences) == 0 and len(game.cannons) == 0:
+        if (
+            game.castle == None
+            and len(game.residences) == 0
+            and len(game.cannons) == 0
+            and len(game.space_cannons) == 0
+        ):
             print("\033c")
             print("You Won!")
             exit(0)
@@ -155,16 +163,17 @@ def animate():
 
         if len(game.barbarians) < 10:
             if key == "1":
-                game.spawnBarbarian(0 + 1, 0)
+                game.spawnArcher(0 + 1, 0)
             elif key == "2":
-                game.spawnBarbarian(KINGDOM_WIDTH - 1 - 1, 0)
+                game.spawnArcher(KINGDOM_WIDTH - 1 - 1, 0)
             elif key == "3":
-                game.spawnBarbarian(0 + 1, KINGDOM_HEIGHT - 1)
+                game.spawnArcher(0 + 1, KINGDOM_HEIGHT - 1)
             elif key == "4":
-                game.spawnBarbarian(KINGDOM_WIDTH - 1 - 1, KINGDOM_HEIGHT - 1)
+                game.spawnArcher(KINGDOM_WIDTH - 1 - 1, KINGDOM_HEIGHT - 1)
 
         game.render()
         game.cannonInteraction()
+        game.spaceCannonInteraction()
 
         if game.player:
             game.tunnelInteraction()
