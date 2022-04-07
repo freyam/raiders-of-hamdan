@@ -17,7 +17,7 @@ class RageSpell(Spell):
         super().__init__(game, "Rage", False)
 
     def action(game):
-        for troop in [game.king] + game.barbarians:
+        for troop in [game.player] + game.barbarians:
             troop.damage = int(troop.damage * 1.5)
             troop.speed = int(troop.speed * 1.5)
 
@@ -27,6 +27,6 @@ class HealSpell(Spell):
         super().__init__(game, "Heal", False)
 
     def action(game):
-        for troop in [game.king] + game.barbarians:
+        for troop in [game.player] + game.barbarians:
             troop.max_hp = int(troop.max_hp * 1.5)
             troop.hp = min(troop.hp + 500, troop.max_hp)

@@ -23,7 +23,7 @@ structure_types = {
         "hostile": True,
         "range": None,
         "damage": None,
-        "color": "#5CB270",  # green
+        "color": "#6DE54F",  # green
         "color_light": "#A8D26D",  # light green
         "color_lighter": "#F4F269",  # lighter green
         "width": 1,

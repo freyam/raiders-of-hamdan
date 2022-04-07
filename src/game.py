@@ -13,7 +13,7 @@ class Game:
 
         self.time = 0
 
-        self.king = None
+        self.player = None
         self.castle = None
 
         self.walls = []
@@ -40,9 +40,9 @@ class Game:
 
         self.kingdom.render(self)
 
-        if self.king:
-            print("King's Health:", str(self.king.hp) + "/" + str(self.king.max_hp))
-            print("King's Weapon:", self.king.weapon)
+        if self.player:
+            print("King's Health:", str(self.player.hp) + "/" + str(self.player.max_hp))
+            print("King's Weapon:", self.player.weapon)
 
         if self.castle:
             print(
@@ -70,13 +70,13 @@ class Game:
     def cannonInteraction(self):
         for cannon in self.cannons:
             if (
-                self.king
-                and abs(self.king.x - cannon.x) <= cannon.range
-                and abs(self.king.y - cannon.y) <= cannon.range
+                self.player
+                and abs(self.player.x - cannon.x) <= cannon.range
+                and abs(self.player.y - cannon.y) <= cannon.range
             ):
-                self.king.hp -= cannon.damage
-                if self.king.hp <= 0:
-                    self.king = None
+                self.player.hp -= cannon.damage
+                if self.player.hp <= 0:
+                    self.player = None
                     for y in range(len(self.kingdom.kingdom)):
                         for x in range(len(self.kingdom.kingdom[0])):
                             if self.kingdom.kingdom[y][x] == "H":
@@ -97,13 +97,16 @@ class Game:
 
     def tunnelInteraction(self):
         for tunnel in self.tunnels:
-            if abs(self.king.x - tunnel.x) <= 2 and abs(self.king.y - tunnel.y) <= 2:
-                if self.king.hp < self.king.max_hp:
-                    self.king.hp += 5
+            if (
+                abs(self.player.x - tunnel.x) <= 2
+                and abs(self.player.y - tunnel.y) <= 2
+            ):
+                if self.player.hp < self.player.max_hp:
+                    self.player.hp += 5
                 break
 
     def handleGameState(self):
-        if self.king is None and len(self.barbarians) == 0:
+        if self.player is None and len(self.barbarians) == 0:
             print("You lose!")
             return True
         elif self.castle is None and self.residences + self.walls + self.cannons == []:

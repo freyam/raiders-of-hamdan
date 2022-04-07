@@ -86,8 +86,10 @@ def init():
     for cannon in game.cannons:
         cannon.display()
 
-    game.king = King(game, 1, 1)
-    game.king.display()
+    player_choice = input("(k)ing or (q)ueen? ")
+    game.player = King(game, 1, 1) if player_choice == "k" else Queen(game, 1, 1)
+
+    game.player.display()
 
 
 commands = []
@@ -103,17 +105,20 @@ def animate():
             key = inputx()
             commands.append(key)
 
-        if game.king is None and len(game.barbarians) == 0:
+        if game.player is None and len(game.barbarians) == 0:
             print("\033c")
             print("You Lost!")
+            exit(0)
             break
 
         if game.castle == None and len(game.residences) == 0 and len(game.cannons) == 0:
             print("\033c")
             print("You Won!")
+            exit(0)
             break
 
         if key == "q":
+            exit(0)
             break
         elif key == "p":
             game.pause = not game.pause
@@ -125,28 +130,28 @@ def animate():
         game.time += 1 / 10
 
         if key == "h":
-            for troop in [game.king] + game.barbarians:
+            for troop in [game.player] + game.barbarians:
                 troop.max_hp = int(troop.max_hp * 1.5)
                 troop.hp = min(troop.hp + 500, troop.max_hp)
         elif key == "r":
-            for troop in [game.king] + game.barbarians:
+            for troop in [game.player] + game.barbarians:
                 troop.damage = troop.damage * 2
                 troop.speed = troop.speed * 2
 
-        if game.king and key in ["w", "a", "s", "d"]:
-            game.king.move(game, key)
+        if game.player and key in ["w", "a", "s", "d"]:
+            game.player.move(game, key)
 
         if key == "l":
-            if game.king.weapon == "sword":
-                game.king.weapon = "shotgun"
+            if game.player.weapon == "standard":
+                game.player.weapon = "special"
             else:
-                game.king.weapon = "sword"
+                game.player.weapon = "standard"
 
-        if game.king and key == " ":
-            if game.king.weapon == "sword":
-                game.king.attack(game)
-            elif game.king.weapon == "shotgun":
-                game.king.attackShotgun(game)
+        if game.player and key == " ":
+            if game.player.weapon == "standard":
+                game.player.attack(game)
+            elif game.player.weapon == "special":
+                game.player.attackSpecial(game)
 
         if len(game.barbarians) < 10:
             if key == "1":
@@ -161,7 +166,7 @@ def animate():
         game.render()
         game.cannonInteraction()
 
-        if game.king:
+        if game.player:
             game.tunnelInteraction()
 
         if len(game.barbarians):
@@ -177,6 +182,7 @@ game = copy.deepcopy(replay_game)
 
 with open(f"assets/replays/replay_{datetime.datetime.now()}.txt", "w") as f:
     f.write(str(commands))
+
 
 commands = []
 for i, file in enumerate(sorted(os.listdir("assets/replays"))):
