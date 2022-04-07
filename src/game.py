@@ -1,5 +1,3 @@
-import time
-
 from src.structure import *
 from src.troop import *
 from src.spell import *
@@ -23,6 +21,8 @@ class Game:
 
         self.tunnels = []
         self.barbarians = []
+        self.archers = []
+        self.balloons = []
 
         self.wallsDestroyed = 0
         self.residencesLooted = 0
@@ -43,8 +43,10 @@ class Game:
         self.kingdom.render(self)
 
         if self.player:
-            print("King's Health:", str(self.player.hp) + "/" + str(self.player.max_hp))
-            print("King's Weapon:", self.player.weapon)
+            print(
+                "Player's Health:", str(self.player.hp) + "/" + str(self.player.max_hp)
+            )
+            print("Player's Weapon:", self.player.weapon)
 
         if self.castle:
             print(
@@ -136,10 +138,15 @@ class Game:
                     abs(barbarian.x - space_cannon.x) <= space_cannon.range
                     and abs(barbarian.y - space_cannon.y) <= space_cannon.range
                 ):
-                    barbarian.hp -= space_cannon.damage
-                    if barbarian.hp <= 0:
-                        self.barbarians.remove(barbarian)
-                        self.kingdom.kingdom[barbarian.y][barbarian.x] = "."
+                    for barb in self.barbarians:
+                        if (
+                            abs(barb.x - barbarian.x) <= 3
+                            and abs(barb.y - barbarian.y) <= 3
+                        ):
+                            barb.hp -= space_cannon.damage
+                            if barb.hp <= 0:
+                                self.barbarians.remove(barb)
+                                self.kingdom.kingdom[barb.y][barb.x] = "."
                     break
 
         # handle balloons and archers
@@ -152,6 +159,9 @@ class Game:
             ):
                 if self.player.hp < self.player.max_hp:
                     self.player.hp += 5
+
+                if self.player.hp > self.player.max_hp:
+                    self.player.hp = self.player.max_hp
                 break
 
     # def handleGameState(self):

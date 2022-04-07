@@ -171,7 +171,6 @@ def animate():
             elif key == "4":
                 game.spawnArcher(KINGDOM_WIDTH - 1 - 1, KINGDOM_HEIGHT - 1)
 
-        game.render()
         game.cannonInteraction()
         game.spaceCannonInteraction()
 
@@ -181,6 +180,16 @@ def animate():
         if len(game.barbarians):
             for barbarian in game.barbarians:
                 barbarian.moveToNearestHostileStructure(game)
+
+        if len(game.archers):
+            for archer in game.archers:
+                archer.moveToNearestHostileStructure(game)
+
+        if len(game.balloons):
+            for balloon in game.balloons:
+                balloon.moveToNearestHostileStructure(game)
+
+        game.render()
 
 
 init()
