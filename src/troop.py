@@ -62,10 +62,10 @@ troop_types = {
         "code": "L",
         "name": "balloon",
         "visual": "¤",
-        "hp": 200,
-        "max_hp": 200,
-        "damage": 10,
-        "speed": 1,
+        "hp": 150,
+        "max_hp": 150,
+        "damage": 20,
+        "speed": 2,
         "weapon": "standard",
         "color": "#f8bc80",  # light orange
         "color_light": "#f9d3b7",  # lighter orange
@@ -367,10 +367,7 @@ class Queen(Troop):
                                 break
                     elif type == "S":
                         for i, space_cannon in enumerate(game.space_cannons):
-                            if (
-                                space_cannon.x == attack_x
-                                and space_cannon.y == attack_y
-                            ):
+                            if space_cannon.x == x and space_cannon.y == y:
                                 game.space_cannons[i].hp -= self.damage
 
                                 if (
@@ -390,7 +387,7 @@ class Queen(Troop):
 
                                 if game.space_cannons[i].hp <= 0:
                                     game.space_cannons.pop(i)
-                                    game.kingdom.kingdom[attack_y][attack_x] = "."
+                                    game.kingdom.kingdom[y][x] = "."
                                     game.spaceCannonsImpaired += 1
                                 break
 
@@ -517,7 +514,7 @@ class King(Troop):
 
                             if game.space_cannons[i].hp <= 0:
                                 game.space_cannons.pop(i)
-                                game.kingdom.kingdom[attack_y][attack_x] = "."
+                                game.kingdom.kingdom[y][x] = "."
                                 game.spaceCannonsImpaired += 1
                             break
 
@@ -650,7 +647,7 @@ class Archer(Troop):
 
                                 if game.walls[i].hp <= 0:
                                     game.walls.pop(i)
-                                    self.in_position = False
+                                    # self.in_position = False
                                     game.kingdom.kingdom[y][x] = "."
                                 break
                     elif type == "C":
@@ -793,24 +790,163 @@ class Balloon(Troop):
         return super().display()
 
     def move(self, game, key):
-        super().move(game, key)
+        if (
+            key == "w"
+            and self.y > 0
+            and game.kingdom.kingdom[self.y - 1][self.x] == "."
+        ):
+            game.kingdom.kingdom[self.y - 1][self.x] = self.code
+            game.kingdom.kingdom[self.y][self.x] = "."
+            self.y -= 1
+        elif (
+            key == "a"
+            and self.x > 0
+            and game.kingdom.kingdom[self.y][self.x - 1] == "."
+        ):
+            game.kingdom.kingdom[self.y][self.x - 1] = self.code
+            game.kingdom.kingdom[self.y][self.x] = "."
+            self.x -= 1
+        elif (
+            key == "s"
+            and self.y < len(game.kingdom.kingdom) - 1
+            and game.kingdom.kingdom[self.y + 1][self.x] == "."
+        ):
+            game.kingdom.kingdom[self.y + 1][self.x] = self.code
+            game.kingdom.kingdom[self.y][self.x] = "."
+            self.y += 1
+        elif (
+            key == "d"
+            and self.x < len(game.kingdom.kingdom[0]) - 1
+            and game.kingdom.kingdom[self.y][self.x + 1] == "."
+        ):
+            game.kingdom.kingdom[self.y][self.x + 1] = self.code
+            game.kingdom.kingdom[self.y][self.x] = "."
+            self.x += 1
+
+        if key in ["w", "a", "s", "d"]:
+            self.direction = key
 
     def attack(self, game):
-        super().attack(game)
+        attack_x, attack_y = self.x, self.y
+
+        if self.direction == "w":
+            attack_y -= 1
+        elif self.direction == "a":
+            attack_x -= 1
+        elif self.direction == "s":
+            attack_y += 1
+        elif self.direction == "d":
+            attack_x += 1
+
+        if (
+            attack_x < 0
+            or attack_x >= len(game.kingdom.kingdom[0])
+            or attack_y < 0
+            or attack_y >= len(game.kingdom.kingdom)
+        ):
+            return
+
+        if game.kingdom.kingdom[attack_y][attack_x] == ".":
+            return
+
+        if is_structure(game.kingdom.kingdom[attack_y][attack_x]):
+            type = structure_types[game.kingdom.kingdom[attack_y][attack_x]]["code"]
+            if type == "H":
+                game.castle.hp -= self.damage
+
+                if game.castle.hp < game.castle.max_hp / 3:
+                    game.castle.color = game.castle.color_lighter
+                elif game.castle.hp <= game.castle.max_hp / 2:
+                    game.castle.color = game.castle.color_light
+
+                if game.castle.hp <= 0:
+                    game.castle = None
+                    for y in range(len(game.kingdom.kingdom)):
+                        for x in range(len(game.kingdom.kingdom[0])):
+                            if game.kingdom.kingdom[y][x] == "H":
+                                game.kingdom.kingdom[y][x] = "."
+            elif type == "W":
+                for i, wall in enumerate(game.walls):
+                    if wall.x == attack_x and wall.y == attack_y:
+                        game.walls[i].hp -= self.damage
+
+                        if game.walls[i].hp < game.walls[i].max_hp / 3:
+                            game.walls[i].color = game.walls[i].color_lighter
+                        elif game.walls[i].hp <= game.walls[i].max_hp / 2:
+                            game.walls[i].color = game.walls[i].color_light
+
+                        if game.walls[i].hp <= 0:
+                            game.walls.pop(i)
+                            game.kingdom.kingdom[attack_y][attack_x] = "."
+                        break
+            elif type == "C":
+                for i, cannon in enumerate(game.cannons):
+                    if cannon.x == attack_x and cannon.y == attack_y:
+                        game.cannons[i].hp -= self.damage
+
+                        if game.cannons[i].hp < game.cannons[i].max_hp / 3:
+                            game.cannons[i].color = game.cannons[i].color_lighter
+                        elif game.cannons[i].hp <= game.cannons[i].max_hp / 2:
+                            game.cannons[i].color = game.cannons[i].color_light
+
+                        if game.cannons[i].hp <= 0:
+                            game.cannons.pop(i)
+                            game.kingdom.kingdom[attack_y][attack_x] = "."
+                            game.cannonsImpaired += 1
+                        break
+            elif type == "R":
+                for i, residence in enumerate(game.residences):
+                    if residence.x == attack_x and residence.y == attack_y:
+                        game.residences[i].hp -= self.damage
+
+                        if game.residences[i].hp < game.residences[i].max_hp / 3:
+                            game.residences[i].color = game.residences[i].color_lighter
+                        elif game.residences[i].hp <= game.residences[i].max_hp / 2:
+                            game.residences[i].color = game.residences[i].color_light
+
+                        if game.residences[i].hp <= 0:
+                            game.residences.pop(i)
+                            game.kingdom.kingdom[attack_y][attack_x] = "."
+                            game.residencesLooted += 1
+                        break
+            elif type == "S":
+                for i, space_cannon in enumerate(game.space_cannons):
+                    if space_cannon.x == attack_x and space_cannon.y == attack_y:
+                        game.space_cannons[i].hp -= self.damage
+
+                        if game.space_cannons[i].hp < game.space_cannons[i].max_hp / 3:
+                            game.space_cannons[i].color = game.space_cannons[
+                                i
+                            ].color_lighter
+                        elif (
+                            game.space_cannons[i].hp <= game.space_cannons[i].max_hp / 2
+                        ):
+                            game.space_cannons[i].color = game.space_cannons[
+                                i
+                            ].color_light
+
+                        if game.space_cannons[i].hp <= 0:
+                            game.space_cannons.pop(i)
+                            game.kingdom.kingdom[attack_y][attack_x] = "."
+                            game.spaceCannonsImpaired += 1
+                        break
 
     def nearestHostileStructure(self, game):
         nearest_structure = None
         nearest_distance = None
 
-        structures = (
-            [game.castle]
-            + game.walls
-            + game.cannons
-            + game.space_cannons
-            + game.residences
-        )
+        priority_structures = game.cannons + game.space_cannons
 
-        for structure in structures:
+        if len(priority_structures) == 0:
+            priority_structures = (
+                [game.castle]
+                + game.walls
+                + game.cannons
+                + game.space_cannons
+                + game.residences
+            )
+
+        for structure in priority_structures:
             if structure and structure.hostile:
                 distance = abs(self.x - structure.x) + abs(self.y - structure.y)
                 if nearest_distance is None or distance < nearest_distance:

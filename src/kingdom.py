@@ -33,6 +33,14 @@ class Kingdom:
                                     structure_types[char]["visual"], cannon.get_color()
                                 )
                                 break
+                    elif type == "S":
+                        for space_cannon in game.space_cannons:
+                            if space_cannon.x == x and space_cannon.y == y:
+                                print_hex(
+                                    structure_types[char]["visual"],
+                                    space_cannon.get_color(),
+                                )
+                                break
                     elif type == "W":
                         for wall in game.walls:
                             if wall.x == x and wall.y == y:

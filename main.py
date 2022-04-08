@@ -21,7 +21,7 @@ def init():
     game.castle = Castle(game, int(KINGDOM_WIDTH / 2 - 3), int(KINGDOM_HEIGHT / 2 - 2))
     game.castle.display()
 
-    game.tunnels.append(Tunnel(game, 0, 0))
+    # game.tunnels.append(Tunnel(game, 0, 0))
     game.tunnels.append(Tunnel(game, KINGDOM_WIDTH - 1, 0))
     game.tunnels.append(Tunnel(game, KINGDOM_WIDTH - 1, KINGDOM_HEIGHT - 1))
     game.tunnels.append(Tunnel(game, 0, KINGDOM_HEIGHT - 1))
@@ -161,15 +161,29 @@ def animate():
             elif game.player.weapon == "special":
                 game.player.attackSpecial(game)
 
-        if len(game.barbarians) < 10:
+        if len(game.barbarians) < 6:
             if key == "1":
-                game.spawnArcher(0 + 1, 0)
+                game.spawnBarbarian(KINGDOM_WIDTH - 1 - 1, 0)
             elif key == "2":
-                game.spawnArcher(KINGDOM_WIDTH - 1 - 1, 0)
+                game.spawnBarbarian(0 + 1, KINGDOM_HEIGHT - 1)
             elif key == "3":
+                game.spawnBarbarian(KINGDOM_WIDTH - 1 - 1, KINGDOM_HEIGHT - 1)
+
+        if len(game.archers) < 6:
+            if key == "4":
+                game.spawnArcher(KINGDOM_WIDTH - 1 - 1, 0)
+            elif key == "5":
                 game.spawnArcher(0 + 1, KINGDOM_HEIGHT - 1)
-            elif key == "4":
+            elif key == "6":
                 game.spawnArcher(KINGDOM_WIDTH - 1 - 1, KINGDOM_HEIGHT - 1)
+
+        if len(game.balloons) < 3:
+            if key == "7":
+                game.spawnBalloon(KINGDOM_WIDTH - 1 - 1, 0)
+            elif key == "8":
+                game.spawnBalloon(0 + 1, KINGDOM_HEIGHT - 1)
+            elif key == "9":
+                game.spawnBalloon(KINGDOM_WIDTH - 1 - 1, KINGDOM_HEIGHT - 1)
 
         game.cannonInteraction()
         game.spaceCannonInteraction()

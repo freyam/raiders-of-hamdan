@@ -53,26 +53,56 @@ class Game:
                 "Castle's Health:", str(self.castle.hp) + "/" + str(self.castle.max_hp)
             )
 
-        print(
-            "Residences Looted: "
-            + str(self.residencesLooted)
-            + "/"
-            + str(len(self.residences) + self.residencesLooted)
-        )
+        print("Residences: ", end="")
+        if len(self.residences) == 0:
+            print("None")
+        else:
+            print()
+        for residence in self.residences:
+            print(
+                "  "
+                + str(residence.x)
+                + ","
+                + str(residence.y)
+                + ": "
+                + str(residence.hp)
+                + "/"
+                + str(residence.max_hp)
+            )
 
-        print(
-            "Cannons Impaired: "
-            + str(self.cannonsImpaired)
-            + "/"
-            + str(len(self.cannons) + self.cannonsImpaired)
-        )
+        print("Cannons: ", end="")
+        if len(self.cannons) == 0:
+            print("None")
+        else:
+            print()
+        for cannon in self.cannons:
+            print(
+                "  "
+                + str(cannon.x)
+                + ","
+                + str(cannon.y)
+                + ": "
+                + str(cannon.hp)
+                + "/"
+                + str(cannon.max_hp)
+            )
 
-        print(
-            "Space Cannons Impaired: "
-            + str(self.spaceCannonsImpaired)
-            + "/"
-            + str(len(self.space_cannons) + self.spaceCannonsImpaired)
-        )
+        print("Space Cannons: ", end="")
+        if len(self.space_cannons) == 0:
+            print("None")
+        else:
+            print()
+        for space_cannon in self.space_cannons:
+            print(
+                "  "
+                + str(space_cannon.x)
+                + ","
+                + str(space_cannon.y)
+                + ": "
+                + str(space_cannon.hp)
+                + "/"
+                + str(space_cannon.max_hp)
+            )
 
     def spawnBarbarian(self, x, y):
         self.kingdom.kingdom[y][x] = troop_types["B"]["code"]
@@ -80,11 +110,11 @@ class Game:
 
     def spawnArcher(self, x, y):
         self.kingdom.kingdom[y][x] = troop_types["A"]["code"]
-        self.barbarians.append(Archer(self, x, y))
+        self.archers.append(Archer(self, x, y))
 
     def spawnBalloon(self, x, y):
         self.kingdom.kingdom[y][x] = troop_types["L"]["code"]
-        self.barbarians.append(Balloon(self, x, y))
+        self.balloons.append(Balloon(self, x, y))
 
     def cannonInteraction(self):
         for cannon in self.cannons:
@@ -114,7 +144,17 @@ class Game:
                         self.kingdom.kingdom[barbarian.y][barbarian.x] = "."
                     break
 
-        # handle archers
+        for cannon in self.cannons:
+            for archer in self.archers:
+                if (
+                    abs(archer.x - cannon.x) <= cannon.range
+                    and abs(archer.y - cannon.y) <= cannon.range
+                ):
+                    archer.hp -= cannon.damage
+                    if archer.hp <= 0:
+                        self.archers.remove(archer)
+                        self.kingdom.kingdom[archer.y][archer.x] = "."
+                    break
 
     def spaceCannonInteraction(self):
         for space_cannon in self.space_cannons:
@@ -149,7 +189,29 @@ class Game:
                                 self.kingdom.kingdom[barb.y][barb.x] = "."
                     break
 
-        # handle balloons and archers
+            for space_cannon in self.space_cannons:
+                for balloon in self.balloons:
+                    if (
+                        abs(balloon.x - space_cannon.x) <= space_cannon.range
+                        and abs(balloon.y - space_cannon.y) <= space_cannon.range
+                    ):
+                        balloon.hp -= space_cannon.damage
+                        if balloon.hp <= 0:
+                            self.balloons.remove(balloon)
+                            self.kingdom.kingdom[balloon.y][balloon.x] = "."
+                        break
+
+            for space_cannon in self.space_cannons:
+                for archer in self.archers:
+                    if (
+                        abs(archer.x - space_cannon.x) <= space_cannon.range
+                        and abs(archer.y - space_cannon.y) <= space_cannon.range
+                    ):
+                        archer.hp -= space_cannon.damage
+                        if archer.hp <= 0:
+                            self.archers.remove(archer)
+                            self.kingdom.kingdom[archer.y][archer.x] = "."
+                        break
 
     def tunnelInteraction(self):
         for tunnel in self.tunnels:
