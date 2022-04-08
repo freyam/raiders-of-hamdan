@@ -1,6 +1,6 @@
 from src.structure import *
 from src.troop import *
-from src.colors import print_hex
+from src.colors import *
 
 
 class Kingdom:
@@ -13,8 +13,8 @@ class Kingdom:
             self.kingdom.append(row)
 
     def render(self, game):
-        for i, row in enumerate(self.kingdom):
-            for j, char in enumerate(row):
+        for _, row in enumerate(self.kingdom):
+            for _, char in enumerate(row):
                 if char == ".":
                     print(char, end="")
                 elif is_structure(char):
