@@ -16,7 +16,10 @@ class Kingdom:
         for _, row in enumerate(self.kingdom):
             for _, char in enumerate(row):
                 if char == ".":
-                    print(char, end="")
+                    if game.showGrass:
+                        print(".", end="")
+                    else:
+                        print(" ", end="")
                 elif is_structure(char):
                     x = row.index(char)
                     y = self.kingdom.index(row)

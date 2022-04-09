@@ -16,12 +16,14 @@ KINGDOM_HEIGHT = 20
 
 game = Game(Kingdom(KINGDOM_HEIGHT, KINGDOM_WIDTH))
 
+player_choice = input("(k)ing or (q)ueen? ")
+
 
 def init():
+    game.player = King(game, 1, 1) if player_choice == "k" else Queen(game, 1, 1)
     game.castle = Castle(game, int(KINGDOM_WIDTH / 2 - 3), int(KINGDOM_HEIGHT / 2 - 2))
     game.castle.display()
 
-    # game.tunnels.append(Tunnel(game, 0, 0))
     game.tunnels.append(Tunnel(game, KINGDOM_WIDTH - 1, 0))
     game.tunnels.append(Tunnel(game, KINGDOM_WIDTH - 1, KINGDOM_HEIGHT - 1))
     game.tunnels.append(Tunnel(game, 0, KINGDOM_HEIGHT - 1))
@@ -34,12 +36,12 @@ def init():
         game.walls.append(Wall(game, game.castle.x - 2, y))
         game.walls.append(Wall(game, game.castle.x + game.castle.width + 1, y))
 
-    game.space_cannons.append(SpaceCannon(game, game.castle.x - 3, game.castle.y - 3))
+    game.cannons.append(Cannon(game, game.castle.x - 3, game.castle.y - 3))
     game.space_cannons.append(
         SpaceCannon(game, game.castle.x + game.castle.width + 2, game.castle.y - 3)
     )
-    game.space_cannons.append(
-        SpaceCannon(
+    game.cannons.append(
+        Cannon(
             game,
             game.castle.x + game.castle.width + 2,
             game.castle.y + game.castle.height + 2,
@@ -49,30 +51,50 @@ def init():
         SpaceCannon(game, game.castle.x - 3, game.castle.y + game.castle.height + 2)
     )
 
-    # for x in range(KINGDOM_WIDTH):
-    #     for y in range(KINGDOM_HEIGHT):
-    #         if (
-    #             game.kingdom.kingdom[y][x] == "."
-    #             and (x < game.castle.x - 2 or x > game.castle.x + game.castle.width + 1)
-    #             and not (
-    #                 x == 0
-    #                 or x == KINGDOM_WIDTH - 1
-    #                 or y == 0
-    #                 or y == KINGDOM_HEIGHT - 1
-    #             )
-    #         ):
-    #             if random.random() < 0.001:
-    #                 game.cannons.append(Cannon(game, x, y))
-    #             elif random.random() < 0.005:
-    #                 game.walls.append(Wall(game, x, y))
-    #             elif random.random() < 0.01:
-    #                 game.residences.append(Residence(game, x, y))
+    hostile_structure_prob = None
 
-    game.residences.append(Residence(game, 42, 12))
-    game.residences.append(Residence(game, 30, 10))
-    game.residences.append(Residence(game, 20, 18))
-    game.residences.append(Residence(game, 5, 5))
-    game.residences.append(Residence(game, 50, 3))
+    if game.level == 1:
+        hostile_structure_prob = 0
+    elif game.level == 2:
+        hostile_structure_prob = 0.001
+    elif game.level == 3:
+        hostile_structure_prob = 0.0015
+
+    for x in range(KINGDOM_WIDTH):
+        for y in range(KINGDOM_HEIGHT):
+            if (
+                game.kingdom.kingdom[y][x] == "."
+                and (x < game.castle.x - 2 or x > game.castle.x + game.castle.width + 1)
+                and not (
+                    x == 0
+                    or x == KINGDOM_WIDTH - 1
+                    or y == 0
+                    or y == KINGDOM_HEIGHT - 1
+                )
+            ):
+                if random.random() < hostile_structure_prob:
+                    game.cannons.append(Cannon(game, x, y))
+                elif random.random() < hostile_structure_prob * 2:
+                    game.space_cannons.append(SpaceCannon(game, x, y))
+
+    for x in range(KINGDOM_WIDTH):
+        for y in range(KINGDOM_HEIGHT):
+            if (
+                game.kingdom.kingdom[y][x] == "."
+                and (x < game.castle.x - 2 or x > game.castle.x + game.castle.width + 1)
+                and not (
+                    x == 0
+                    or x == KINGDOM_WIDTH - 1
+                    or y == 0
+                    or y == KINGDOM_HEIGHT - 1
+                )
+            ):
+                if random.random() < 0.005:
+                    game.residences.append(Residence(game, x, y))
+                elif random.random() < 0.01:
+                    game.walls.append(Wall(game, x, y))
+
+    game.castle.display()
 
     for tunnel in game.tunnels:
         tunnel.display()
@@ -88,9 +110,6 @@ def init():
 
     for space_cannon in game.space_cannons:
         space_cannon.display()
-
-    player_choice = input("(k)ing or (q)ueen? ")
-    game.player = King(game, 1, 1) if player_choice == "k" else Queen(game, 1, 1)
 
     game.player.display()
 
@@ -108,22 +127,53 @@ def animate():
             key = inputx()
             commands.append(key)
 
-        if game.player is None and len(game.barbarians) == 0:
+        if (
+            game.player is None
+            and game.deployed["barbarians"] == 6
+            and game.deployed["archers"] == 6
+            and game.deployed["balloons"] == 3
+        ):
             print("\033c")
             print("You Lost!")
             exit(0)
             break
-
-        if (
+        elif (
             game.castle == None
             and len(game.residences) == 0
             and len(game.cannons) == 0
             and len(game.space_cannons) == 0
         ):
-            print("\033c")
-            print("You Won!")
-            exit(0)
-            break
+            if game.level == 3:
+                print("\033c")
+                print("You Won!")
+                exit(0)
+                break
+
+            game.level += 1
+
+            for x in range(KINGDOM_WIDTH):
+                for y in range(KINGDOM_HEIGHT):
+                    game.kingdom.kingdom[y][x] = "."
+
+            game.time = 0
+
+            game.player = None
+            game.castle = None
+
+            game.walls = []
+            game.residences = []
+            game.cannons = []
+            game.space_cannons = []
+
+            game.tunnels = []
+            game.barbarians = []
+            game.archers = []
+            game.balloons = []
+
+            game.deployed = {"barbarians": 0, "archers": 0, "balloons": 0}
+
+            init()
+            animate()
 
         if key == "q":
             exit(0)
@@ -137,12 +187,20 @@ def animate():
 
         game.time += 1 / 10
 
+        if key == "m":
+            game.showGrass = not game.showGrass
+
+        if key == "n":
+            game.showHUD = not game.showHUD
+
+        troops = game.barbarians + game.archers + game.balloons
+
         if key == "h":
-            for troop in [game.player] + game.barbarians:
+            for troop in [game.player] + troops:
                 troop.max_hp = int(troop.max_hp * 1.5)
                 troop.hp = min(troop.hp + 500, troop.max_hp)
         elif key == "r":
-            for troop in [game.player] + game.barbarians:
+            for troop in [game.player] + troops:
                 troop.damage = troop.damage * 2
                 troop.speed = troop.speed * 2
 
@@ -161,7 +219,7 @@ def animate():
             elif game.player.weapon == "special":
                 game.player.attackSpecial(game)
 
-        if len(game.barbarians) < 6:
+        if game.deployed["barbarians"] < 5:
             if key == "1":
                 game.spawnBarbarian(KINGDOM_WIDTH - 1 - 1, 0)
             elif key == "2":
@@ -169,7 +227,7 @@ def animate():
             elif key == "3":
                 game.spawnBarbarian(KINGDOM_WIDTH - 1 - 1, KINGDOM_HEIGHT - 1)
 
-        if len(game.archers) < 6:
+        if game.deployed["archers"] < 5:
             if key == "4":
                 game.spawnArcher(KINGDOM_WIDTH - 1 - 1, 0)
             elif key == "5":
@@ -177,7 +235,7 @@ def animate():
             elif key == "6":
                 game.spawnArcher(KINGDOM_WIDTH - 1 - 1, KINGDOM_HEIGHT - 1)
 
-        if len(game.balloons) < 3:
+        if game.deployed["balloons"] < 2:
             if key == "7":
                 game.spawnBalloon(KINGDOM_WIDTH - 1 - 1, 0)
             elif key == "8":
@@ -191,17 +249,8 @@ def animate():
         if game.player:
             game.tunnelInteraction()
 
-        if len(game.barbarians):
-            for barbarian in game.barbarians:
-                barbarian.moveToNearestHostileStructure(game)
-
-        if len(game.archers):
-            for archer in game.archers:
-                archer.moveToNearestHostileStructure(game)
-
-        if len(game.balloons):
-            for balloon in game.balloons:
-                balloon.moveToNearestHostileStructure(game)
+        for troop in troops:
+            troop.moveToNearestHostileStructure(game)
 
         game.render()
 
