@@ -1,6 +1,13 @@
-![](./assets/logo.png)
+![](./assets/raiders-of-hamdan.png)
 
 Raiders of Hamdan tells the story of the indestructible kingdom of the Hamdan. In this CLI game, you play as the Ruler of the Electra Kingdom who is trying to bring down the legacy of Hamdan.
+
+TODO
+:: Archer attacks
+:: Balloon movement
+:: levels
+:: Movement Avoiding Walls
+:: The Archer Queen’s Eagle Arrow (replace special with this and change current special with standard)
 
 ## Gameplay
 
