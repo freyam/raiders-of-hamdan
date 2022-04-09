@@ -135,7 +135,6 @@ def animate():
         ):
             print("\033c")
             print("You Lost!")
-            exit(0)
             break
         elif (
             game.castle == None
@@ -146,7 +145,6 @@ def animate():
             if game.level == 3:
                 print("\033c")
                 print("You Won!")
-                exit(0)
                 break
 
             game.level += 1
@@ -175,8 +173,9 @@ def animate():
             init()
             animate()
 
+            break
+
         if key == "q":
-            exit(0)
             break
         elif key == "p":
             game.pause = not game.pause
@@ -264,6 +263,10 @@ game = copy.deepcopy(replay_game)
 with open(f"assets/replays/replay_{datetime.datetime.now()}.txt", "w") as f:
     f.write(str(commands))
 
+if input("View (r)eplays? ") != "r":
+    exit(0)
+
+print("\033c")
 
 commands = []
 for i, file in enumerate(sorted(os.listdir("assets/replays"))):
