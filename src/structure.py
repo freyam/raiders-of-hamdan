@@ -56,7 +56,7 @@ structure_types = {
         "hostile": True,
         "range": 5,
         "space-range": 0,
-        "damage": 5,
+        "damage": 7,
         "color": "#0D41E1",  # blue
         "color_light": "#0A85ED",  # light blue
         "color_lighter": "#07C8F9",  # lighter blue
@@ -72,7 +72,7 @@ structure_types = {
         "hostile": True,
         "range": 5,
         "space-range": 5,
-        "damage": 2,
+        "damage": 4,
         "color": "#5BF6D0",  # green
         "color_light": "#B7FBEA",  # light green
         "color_lighter": "#EFFEFA",  # lighter green

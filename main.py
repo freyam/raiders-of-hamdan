@@ -259,6 +259,8 @@ replay_game = copy.deepcopy(game)
 animate()
 game = copy.deepcopy(replay_game)
 
+if not os.path.exists("assets/replays"):
+    os.makedirs("assets/replays")
 
 with open(f"assets/replays/replay_{datetime.datetime.now()}.txt", "w") as f:
     f.write(str(commands))
